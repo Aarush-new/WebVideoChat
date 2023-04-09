@@ -3,7 +3,7 @@ const myVideo = document.createElement("video");
 myVideo.muted = true;
 
 const peer = new Peer(undefined, {
-  host: 'aarush-new.github.io',
+  host: 'https://aarush-new.github.io/WebVideoChat',
   port: '443',
   path: '/peerjs.min.js'
 });
