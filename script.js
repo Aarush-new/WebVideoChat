@@ -5,7 +5,7 @@ myVideo.muted = true;
 const peer = new Peer(undefined, {
   host: 'aarush-new.github.io',
   port: '443',
-  path: '/WebVideoChat'
+  path: '/peerjs.min.js'
 });
 
 let myVideoStream;
