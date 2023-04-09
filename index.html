@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Video Chat</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.3.2/peerjs.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Web Video Chat</h1>
+    <div class="video-container">
+      <video id="localVideo" autoplay muted></video>
+    </div>
+    <div class="btn-group" role="group" aria-label="Video Controls">
+      <button type="button" class="btn btn-primary" onclick="toggleVideo()">Toggle Video</button>
+      <button type="button" class="btn btn-primary" onclick="toggleAudio()">Toggle Audio</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
