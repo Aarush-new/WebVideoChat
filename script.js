@@ -1,67 +1,107 @@
-// Set up PeerJS and connect to signaling server
-const peer = new Peer();
-peer.on('open', id => {
-  alert(id);
+const videoGrid = document.getElementById("video-grid");
+const myVideo = document.createElement("video");
+myVideo.muted = true;
+
+let peer = new Peer(undefined, {
+  host: "https://aarush-new.github.io/WebVideoChat",
+  secure: true,
+  port: 443,
 });
 
-// Get the local video stream
-navigator.mediaDevices.getUserMedia({video: true, audio: true})
-  .then(stream => {
-    const localVideo = document.getElementById('localVideo');
-    localVideo.srcObject = stream;
+let myVideoStream;
 
-    // Call other peers when a new connection is established
-    peer.on('connection', conn => {
-      const call = peer.call(conn.peer, stream);
-      call.on('stream', remoteStream => {
-        addVideo(remoteStream, conn.peer);
-      });
-    });
-
-    // Answer incoming calls from other peers
-    peer.on('call', call => {
-      call.answer(stream);
-      call.on('stream', remoteStream => {
-        addVideo(remoteStream, call.peer);
-      });
-    });
+navigator.mediaDevices
+  .getUserMedia({
+    video: true,
+    audio: true,
   })
-  .catch(error => {
-    console.error('Error getting user media:', error);
+  .then((stream) => {
+    myVideoStream = stream;
+    addVideoStream(myVideo, stream);
+
+    peer.on("call", (call) => {
+      call.answer(stream);
+      const video = document.createElement("video");
+      call.on("stream", (userVideoStream) => {
+        addVideoStream(video, userVideoStream);
+      });
+    });
+
+    socket.on("user-connected", (userId) => {
+      connectToNewUser(userId, stream);
+    });
   });
 
-// Add a new video element to the grid for each new user
-function addVideo(stream, peerId) {
-  const videoContainer = document.querySelector('.video-container');
-  const video = document.createElement('video');
+peer.on("open", (id) => {
+  socket.emit("join-room", ROOM_ID, id);
+});
+
+const connectToNewUser = (userId, stream) => {
+  const call = peer.call(userId, stream);
+  const video = document.createElement("video");
+  call.on("stream", (userVideoStream) => {
+    addVideoStream(video, userVideoStream);
+  });
+};
+
+const addVideoStream = (video, stream) => {
   video.srcObject = stream;
-  video.autoplay = true;
-  video.setAttribute('data-peer-id', peerId);
-  videoContainer.appendChild(video);
-  updateGrid();
-}
-
-// Update the grid layout based on the number of users
-function updateGrid() {
-  const videoContainer = document.querySelector('.video-container');
-  const numVideos = videoContainer.childElementCount;
-  videoContainer.style.gridTemplateColumns = `repeat(${Math.ceil(Math.sqrt(numVideos))}, 1fr)`;
-}
-
-// Toggle the local video stream on/off
-function toggleVideo() {
-  const localStream = document.getElementById('localVideo').srcObject;
-  const tracks = localStream.getVideoTracks();
-  tracks.forEach(track => {
-    track.enabled = !track.enabled;
+  video.addEventListener("loadedmetadata", () => {
+    video.play();
   });
-}
+  videoGrid.append(video);
+};
 
-// Toggle the local audio stream on/off
-function toggleAudio() {
-  const localStream = document.getElementById('localVideo').srcObject;
-  const tracks = localStream.getAudioTracks();
-  tracks.forEach(track => {
-    track.enabled = !track.enabled;
-  });
-}
+const toggleVideo = () => {
+  const enabled = myVideoStream.getVideoTracks()[0].enabled;
+  if (enabled) {
+    myVideoStream.getVideoTracks()[0].enabled = false;
+    setPlayVideo();
+  } else {
+    setStopVideo();
+    myVideoStream.getVideoTracks()[0].enabled = true;
+  }
+};
+
+const toggleAudio = () => {
+  const enabled = myVideoStream.getAudioTracks()[0].enabled;
+  if (enabled) {
+    myVideoStream.getAudioTracks()[0].enabled = false;
+    setUnmuteButton();
+  } else {
+    setMuteButton();
+    myVideoStream.getAudioTracks()[0].enabled = true;
+  }
+};
+
+const setPlayVideo = () => {
+  const html = `
+    <i class="unmute fa fa-play-circle"></i>
+    <span>Play Video</span>
+  `;
+  document.querySelector(".main__video__button").innerHTML = html;
+};
+
+const setStopVideo = () => {
+  const html = `
+    <i class="fa fa-stop-circle"></i>
+    <span>Stop Video</span>
+  `;
+  document.querySelector(".main__video__button").innerHTML = html;
+};
+
+const setMuteButton = () => {
+  const html = `
+    <i class="fas fa-microphone"></i>
+    <span>Mute</span>
+  `;
+  document.querySelector(".main__mute__button").innerHTML = html;
+};
+
+const setUnmuteButton = () => {
+  const html = `
+  <i class="unmute fas fa-microphone-slash"></i>
+    <span>Unmute</span>
+  `;
+  document.querySelector(".main__mute__button").innerHTML = html;
+};
