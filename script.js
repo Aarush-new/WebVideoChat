@@ -2,12 +2,11 @@ const videoGrid = document.getElementById("video-grid");
 const myVideo = document.createElement("video");
 myVideo.muted = true;
 
-let peer = new Peer(undefined, {
-  host: "https://aarush-new.github.io/WebVideoChat",
-  secure: true,
-  port: 443,
+const peer = new Peer(undefined, {
+  host: 'aarush-new.github.io',
+  port: '443',
+  path: '/WebVideoChat'
 });
-
 let myVideoStream;
 
 navigator.mediaDevices
