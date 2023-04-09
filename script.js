@@ -7,6 +7,7 @@ const peer = new Peer(undefined, {
   port: '443',
   path: '/WebVideoChat'
 });
+
 let myVideoStream;
 
 navigator.mediaDevices
