@@ -1,7 +1,7 @@
 // Set up PeerJS and connect to signaling server
 const peer = new Peer();
 peer.on('open', id => {
-  console.log('My peer ID is:', id);
+  alert(id);
 });
 
 // Get the local video stream
